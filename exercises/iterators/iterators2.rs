@@ -16,8 +16,7 @@ pub fn capitalize_first(input: &str) -> String {
     match c.next() {
         None => String::new(),
         Some(first) => {
-            first = first.to_uppercase();
-            String::from(c)
+            first.to_uppercase().collect::<String>() + c.as_str()
         },
     }
 }
@@ -41,7 +40,7 @@ pub fn capitalize_words_vector(words: &[&str]) -> Vec<String> {
 pub fn capitalize_words_string(words: &[&str]) -> String {
     let mut s = String::new();
     for i in words.iter() {
-        s = format!("{}{}", s, i);
+        s = format!("{}{}", capitalize_first(&s), capitalize_first(i));
     }
     s
 }
