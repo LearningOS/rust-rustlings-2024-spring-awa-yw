@@ -51,12 +51,32 @@ where
     // Insert a value into the BST
     fn insert(&mut self, value: T) {
         //TODO
+        match &mut self.root {
+            Some(ptr_tree_node) => {
+                ptr_tree_node.insert(value);
+            },
+            None => {
+                let tree_node = TreeNode {
+                    value,
+                    left: None,
+                    right: None,
+                };
+                self.root = Some(Box::from(tree_node));
+            }
+        } 
     }
 
     // Search for a value in the BST
     fn search(&self, value: T) -> bool {
         //TODO
-        true
+        match &self.root {
+            Some(ptr_tree_node) => {
+                return ptr_tree_node.search(value);
+            },
+            None => {
+                return false;
+            }
+        }
     }
 }
 
@@ -67,6 +87,55 @@ where
     // Insert a node into the tree
     fn insert(&mut self, value: T) {
         //TODO
+        if value == self.value {
+            return ;
+        } else if value > self.value {
+            match &mut self.right {
+                Some(ptr_to_right) => {
+                    ptr_to_right.insert(value);
+                    return ;
+                }
+                None => {
+                    let tree_node = TreeNode {
+                        value,
+                        left: None,
+                        right: None,
+                    };
+                    self.right = Some(Box::from(tree_node));
+                }
+            }
+        } else {
+            match &mut self.left {
+                Some(ptr_to_left) => {
+                    ptr_to_left.insert(value);
+                    return ;
+                }
+                None => {
+                    let tree_node = TreeNode {
+                        value,
+                        left: None,
+                        right: None,
+                    };
+                    self.left = Some(Box::from(tree_node));
+                }
+            }
+        }
+    }
+    fn search(&self, value: T) -> bool{
+        //TODO
+        if value == self.value {
+            return true;
+        } else if value > self.value {
+            match &self.right {
+                Some(ptr_to_right) => return ptr_to_right.search(value),
+                None => return false,
+            }
+        } else {
+            match &self.left {
+                Some(ptr_to_left) => return ptr_to_left.search(value),
+                None => return false,
+            }
+        }
     }
 }
 

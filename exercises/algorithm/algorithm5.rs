@@ -31,6 +31,26 @@ impl Graph {
 		//TODO
 
         let mut visit_order = vec![];
+        let mut visit = vec![false; self.adj.len()];
+        let mut hh = 0usize;
+        let mut tt = 0usize;
+        visit_order.push(start);
+        visit[start] = true;
+
+        while hh <= tt {
+            let now = visit_order[hh];
+            hh += 1;
+
+            for e in &(self.adj)[now] {
+                if visit[*e] == true {
+                    continue;
+                }
+                visit_order.push(*e);
+                tt += 1;
+                visit[*e] = true;
+            }
+        }
+
         visit_order
     }
 }

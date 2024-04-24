@@ -38,6 +38,18 @@ where
 
     pub fn add(&mut self, value: T) {
         //TODO
+        self.count += 1;
+        self.items.push(value);
+        let mut now_ptr = self.count;
+        while now_ptr != 1 {
+            let parent = self.parent_idx(now_ptr);
+            if (self.comparator)(&self.items[parent], &self.items[now_ptr]) {
+                break;
+            } else {
+                self.items.swap(parent,now_ptr);
+                now_ptr = parent;
+            }
+        }
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -85,7 +97,59 @@ where
 
     fn next(&mut self) -> Option<T> {
         //TODO
-		None
+		if self.is_empty() {
+            return None;
+        }
+        if self.len() == 1 {
+            self.count -= 1;
+            let value = self.items.remove(1);
+            return Some(value);
+        }
+        self.items.swap(1,self.count);
+        self.count -= 1;
+        let value = self.items.pop();
+        let mut now_ptr : usize = 1;
+        loop {
+            if now_ptr * 2 + 1 <= self.count{
+                let value = &self.items[now_ptr];
+                let lnode = self.left_child_idx(now_ptr);
+                let rnode = self.right_child_idx(now_ptr);
+                let lvalue = &self.items[lnode];
+                let rvalue = &self.items[rnode];
+                let lresult = (self.comparator)(value, lvalue);
+                let rresult = (self.comparator)(value, rvalue);
+                if lresult && rresult {
+                    break;
+                } else if lresult {
+                    self.items.swap(now_ptr,rnode);
+                    now_ptr = rnode;
+                } else if rresult {
+                    self.items.swap(now_ptr,lnode);
+                    now_ptr = lnode;
+                } else if (self.comparator)(lvalue, rvalue) {
+                    self.items.swap(now_ptr,lnode);
+                    now_ptr = lnode;
+                } else {
+                    self.items.swap(now_ptr,rnode);
+                    now_ptr = rnode;
+                }
+            } else if now_ptr * 2 <= self.count {
+                let value = &self.items[now_ptr];
+                let lnode = self.left_child_idx(now_ptr);
+                let lvalue = &self.items[lnode];
+                let lresult = (self.comparator)(value, lvalue);
+                if lresult {
+                    break;
+                } else {
+                    self.items.swap(now_ptr,lnode);
+                    now_ptr = lnode;
+                }
+            } else {
+                break;
+            }
+
+        }
+        return Some(value?);
     }
 }
 

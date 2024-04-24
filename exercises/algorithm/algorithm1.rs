@@ -28,13 +28,13 @@ struct LinkedList<T> {
     end: Option<NonNull<Node<T>>>,
 }
 
-impl<T> Default for LinkedList<T> {
+impl<T: std::cmp::PartialOrd> Default for LinkedList<T> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<T> LinkedList<T> {
+impl<T: std::cmp::PartialOrd> LinkedList<T> {
     pub fn new() -> Self {
         Self {
             length: 0,
@@ -68,10 +68,48 @@ impl<T> LinkedList<T> {
             },
         }
     }
+    pub fn add_node(&mut self, node: NonNull<Node<T>>) {
+        let mut node_ptr = Some(node);
+        match self.end {
+            None => self.start = node_ptr,
+            Some(end_ptr) => unsafe { (*end_ptr.as_ptr()).next = node_ptr },
+        }
+        self.end = node_ptr;
+        self.length += 1;
+    }
 	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
 	{
 		//TODO
-        
+        let mut merge_list = LinkedList::<T>::new();
+        let mut a_node = list_a.start;
+        let mut b_node = list_b.start;
+
+        while let (Some(a_ptr), Some(b_ptr)) = (a_node, b_node) {
+            let a_value;
+            let b_value;
+            unsafe {
+                a_value = &(*a_ptr.as_ptr()).val;
+                b_value = &(*b_ptr.as_ptr()).val;
+            }
+            if *a_value <= *b_value {
+                merge_list.add_node(a_ptr);
+                a_node = unsafe { (*a_ptr.as_ptr()).next };
+            } else {
+                merge_list.add_node(b_ptr);
+                b_node = unsafe { (*b_ptr.as_ptr()).next };
+            }
+        }
+
+        while let Some(a_ptr) = a_node {
+            merge_list.add_node(a_ptr);
+            a_node = unsafe { (*a_ptr.as_ptr()).next };
+        }
+
+        while let Some(b_ptr) = b_node {
+            merge_list.add_node(b_ptr);
+            b_node = unsafe { (*b_ptr.as_ptr()).next };
+        }
+        merge_list
 	}
 }
 
